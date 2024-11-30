@@ -5,9 +5,9 @@
 
 import time
 
-from src.kesslergame import Scenario, KesslerGame, GraphicsType
-from test_controller import TestController
-from graphics_both import GraphicsBoth
+from kesslergame import Scenario, KesslerGame, GraphicsType
+from ael_controller import AelController
+from scott_dick_controller import ScottDickController
 
 # Define game scenario
 my_test_scenario = Scenario(name='Test Scenario',
@@ -33,7 +33,7 @@ game = KesslerGame(settings=game_settings)  # Use this to visualize the game sce
 
 # Evaluate the game
 pre = time.perf_counter()
-score, perf_data = game.run(scenario=my_test_scenario, controllers=[TestController(), TestController()])
+score, perf_data = game.run(scenario=my_test_scenario, controllers=[AelController(), AelController()])
 
 # Print out some general info about the result
 print('Scenario eval time: '+str(time.perf_counter()-pre))
