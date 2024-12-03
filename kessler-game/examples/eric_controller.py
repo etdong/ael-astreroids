@@ -78,10 +78,10 @@ class EricTestController(KesslerController):
         rule2 = ctrl.Rule(bullet_time['L'] & theta_delta['NM'],
                           (ship_turn['NM'], ship_fire['N'], ship_move['M'], ship_mine['N']))
         rule3 = ctrl.Rule(bullet_time['L'] & theta_delta['NS'],
-                          (ship_turn['NS'], ship_fire['Y'], ship_move['L'], ship_mine['N']))
+                          (ship_turn['NS'], ship_fire['Y'], ship_move['Z'], ship_mine['N']))
         # rule4 = ctrl.Rule(bullet_time['L'] & theta_delta['Z'], (ship_turn['Z'], ship_fire['Y'], ship_fire['Y']))
         rule5 = ctrl.Rule(bullet_time['L'] & theta_delta['PS'],
-                          (ship_turn['PS'], ship_fire['Y'], ship_move['L'], ship_mine['N']))
+                          (ship_turn['PS'], ship_fire['Y'], ship_move['Z'], ship_mine['N']))
         rule6 = ctrl.Rule(bullet_time['L'] & theta_delta['PM'],
                           (ship_turn['PM'], ship_fire['N'], ship_move['M'], ship_mine['N']))
         rule7 = ctrl.Rule(bullet_time['L'] & theta_delta['PL'],
@@ -91,27 +91,27 @@ class EricTestController(KesslerController):
         rule9 = ctrl.Rule(bullet_time['M'] & theta_delta['NM'],
                           (ship_turn['NM'], ship_fire['N'], ship_move['L'], ship_mine['N']))
         rule10 = ctrl.Rule(bullet_time['M'] & theta_delta['NS'],
-                           (ship_turn['NS'], ship_fire['Y'], ship_move['L'], ship_mine['N']))
+                           (ship_turn['NS'], ship_fire['Y'], ship_move['Z'], ship_mine['N']))
         # rule11 = ctrl.Rule(bullet_time['M'] & theta_delta['Z'], (ship_turn['Z'], ship_fire['Y'], ship_fire['Y']))
         rule12 = ctrl.Rule(bullet_time['M'] & theta_delta['PS'],
-                           (ship_turn['PS'], ship_fire['Y'], ship_move['L'], ship_mine['N']))
+                           (ship_turn['PS'], ship_fire['Y'], ship_move['Z'], ship_mine['N']))
         rule13 = ctrl.Rule(bullet_time['M'] & theta_delta['PM'],
                            (ship_turn['PM'], ship_fire['N'], ship_move['L'], ship_mine['N']))
         rule14 = ctrl.Rule(bullet_time['M'] & theta_delta['PL'],
                            (ship_turn['PL'], ship_fire['N'], ship_move['M'], ship_mine['N']))
         rule15 = ctrl.Rule(bullet_time['S'] & theta_delta['NL'],
-                           (ship_turn['NL'], ship_fire['Y'], ship_move['L'], ship_mine['Y']))
+                           (ship_turn['NL'], ship_fire['Y'], ship_move['Z'], ship_mine['Y']))
         rule16 = ctrl.Rule(bullet_time['S'] & theta_delta['NM'],
-                           (ship_turn['NM'], ship_fire['Y'], ship_move['L'], ship_mine['N']))
+                           (ship_turn['NM'], ship_fire['Y'], ship_move['Z'], ship_mine['N']))
         rule17 = ctrl.Rule(bullet_time['S'] & theta_delta['NS'],
-                           (ship_turn['NS'], ship_fire['Y'], ship_move['L'], ship_mine['N']))
+                           (ship_turn['NS'], ship_fire['Y'], ship_move['Z'], ship_mine['N']))
         # rule18 = ctrl.Rule(bullet_time['S'] & theta_delta['Z'], (ship_turn['Z'], ship_fire['Y'], ship_fire['Y']))
         rule19 = ctrl.Rule(bullet_time['S'] & theta_delta['PS'],
-                           (ship_turn['PS'], ship_fire['Y'], ship_move['L'], ship_mine['N']))
+                           (ship_turn['PS'], ship_fire['Y'], ship_move['Z'], ship_mine['N']))
         rule20 = ctrl.Rule(bullet_time['S'] & theta_delta['PM'],
-                           (ship_turn['PM'], ship_fire['Y'], ship_move['L'], ship_mine['N']))
+                           (ship_turn['PM'], ship_fire['Y'], ship_move['Z'], ship_mine['N']))
         rule21 = ctrl.Rule(bullet_time['S'] & theta_delta['PL'],
-                           (ship_turn['PL'], ship_fire['Y'], ship_move['L'], ship_mine['Y']))
+                           (ship_turn['PL'], ship_fire['Y'], ship_move['Z'], ship_mine['Y']))
 
         # Declare the fuzzy controller, add the rules
         # This is an instance variable, and thus available for other methods in the same object. See notes.
@@ -406,9 +406,6 @@ class EricTestController(KesslerController):
                 thrust = -1 * ship_vel_vector / abs(ship_vel_vector)
             else:
                 thrust = 0
-
-        if thrust < 100:
-            thrust = 0
 
         if shooting.output['ship_mine'] >= 0.5:
             drop_mine = True
