@@ -13,7 +13,6 @@ from skfuzzy import control as ctrl
 import math
 import numpy as np
 
-COLLISION_TIME_TOLERANCE = 15
 SHIP_RADIUS = 20.0
 
 
@@ -163,7 +162,7 @@ class AEL_CompetitionController(KesslerController):
                 # Asteroid is stationary relative to the ship
                 continue
             t_min = -np.dot(R, V) / V_dot_V
-            if t_min < 0 or t_min > COLLISION_TIME_TOLERANCE:
+            if t_min < 0:
                 # Asteroid is not on a collision course with the ship for a while
                 continue
 
@@ -214,10 +213,6 @@ class AEL_CompetitionController(KesslerController):
                 # No collision possible
                 continue
             collision_time = min(possible_collision_times)
-
-            if collision_time > COLLISION_TIME_TOLERANCE:
-                # No collision possible
-                continue
 
             if collision_time < min_collision_time:
                 min_collision_time = collision_time
