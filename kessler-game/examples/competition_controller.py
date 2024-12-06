@@ -23,12 +23,11 @@ class AEL_CompetitionController(KesslerController):
 
         # self.targeting_control is the targeting rulebase, which is static in this controller.
         # Declare variables
-        bullet_time = ctrl.Antecedent(np.arange(0, 1.0, 0.002), 'bullet_time')
+        bullet_time = ctrl.Antecedent(np.arange(0, 1.0, 0.01), 'bullet_time')  # Updated as per class email
         theta_delta = ctrl.Antecedent(np.arange(-1 * math.pi / 30, math.pi / 30, 0.1),
                                       'theta_delta')  # Radians due to Python
         ship_turn = ctrl.Consequent(np.arange(-180, 180, 1), 'ship_turn')  # Degrees due to Kessler
         ship_fire = ctrl.Consequent(np.arange(-1, 1, 0.1), 'ship_fire')
-        ship_move = ctrl.Consequent(np.arange(-210, 0, 1), 'ship_move')
 
         # Declare fuzzy sets for bullet_time (how long it takes for the bullet to reach the intercept point)
         bullet_time['S'] = fuzz.trimf(bullet_time.universe, [0, 0, 0.05])
@@ -61,33 +60,28 @@ class AEL_CompetitionController(KesslerController):
         ship_fire['N'] = fuzz.trimf(ship_fire.universe, [-1, -1, 0.0])
         ship_fire['Y'] = fuzz.trimf(ship_fire.universe, [0.0, 1, 1])
 
-        ship_move['L'] = fuzz.trimf(ship_move.universe, [-150, -125, -75])
-        ship_move['M'] = fuzz.trimf(ship_move.universe, [-100, -75, -50])
-        ship_move['S'] = fuzz.trimf(ship_move.universe, [-50, -25, 0])
-        ship_move['Z'] = fuzz.trimf(ship_move.universe, [0, 0, 0])
-
         # Declare each fuzzy rule
-        rule1 = ctrl.Rule(bullet_time['L'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['N'], ship_move['S']))
-        rule2 = ctrl.Rule(bullet_time['L'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['N'], ship_move['M']))
-        rule3 = ctrl.Rule(bullet_time['L'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y'], ship_move['Z']))
+        rule1 = ctrl.Rule(bullet_time['L'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['N']))
+        rule2 = ctrl.Rule(bullet_time['L'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['N']))
+        rule3 = ctrl.Rule(bullet_time['L'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y']))
         # rule4 = ctrl.Rule(bullet_time['L'] & theta_delta['Z'], (ship_turn['Z'], ship_fire['Y']))
-        rule5 = ctrl.Rule(bullet_time['L'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y'], ship_move['Z']))
-        rule6 = ctrl.Rule(bullet_time['L'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['N']), ship_move['M'])
-        rule7 = ctrl.Rule(bullet_time['L'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['N'], ship_move['S']))
-        rule8 = ctrl.Rule(bullet_time['M'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['N'], ship_move['M']))
-        rule9 = ctrl.Rule(bullet_time['M'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['N'], ship_move['L']))
-        rule10 = ctrl.Rule(bullet_time['M'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y'], ship_move['Z']))
+        rule5 = ctrl.Rule(bullet_time['L'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y']))
+        rule6 = ctrl.Rule(bullet_time['L'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['N']))
+        rule7 = ctrl.Rule(bullet_time['L'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['N']))
+        rule8 = ctrl.Rule(bullet_time['M'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['N']))
+        rule9 = ctrl.Rule(bullet_time['M'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['N']))
+        rule10 = ctrl.Rule(bullet_time['M'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y']))
         # rule11 = ctrl.Rule(bullet_time['M'] & theta_delta['Z'], (ship_turn['Z'], ship_fire['Y']))
-        rule12 = ctrl.Rule(bullet_time['M'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y'], ship_move['Z']))
-        rule13 = ctrl.Rule(bullet_time['M'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['N'], ship_move['L']))
-        rule14 = ctrl.Rule(bullet_time['M'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['N'], ship_move['M']))
-        rule15 = ctrl.Rule(bullet_time['S'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['Y'], ship_move['Z']))
-        rule16 = ctrl.Rule(bullet_time['S'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['Y'], ship_move['Z']))
-        rule17 = ctrl.Rule(bullet_time['S'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y'], ship_move['Z']))
+        rule12 = ctrl.Rule(bullet_time['M'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y']))
+        rule13 = ctrl.Rule(bullet_time['M'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['N']))
+        rule14 = ctrl.Rule(bullet_time['M'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['N']))
+        rule15 = ctrl.Rule(bullet_time['S'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['Y']))
+        rule16 = ctrl.Rule(bullet_time['S'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['Y']))
+        rule17 = ctrl.Rule(bullet_time['S'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y']))
         # rule18 = ctrl.Rule(bullet_time['S'] & theta_delta['Z'], (ship_turn['Z'], ship_fire['Y']))
-        rule19 = ctrl.Rule(bullet_time['S'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y'], ship_move['Z']))
-        rule20 = ctrl.Rule(bullet_time['S'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['Y'], ship_move['Z']))
-        rule21 = ctrl.Rule(bullet_time['S'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['Y'], ship_move['Z']))
+        rule19 = ctrl.Rule(bullet_time['S'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y']))
+        rule20 = ctrl.Rule(bullet_time['S'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['Y']))
+        rule21 = ctrl.Rule(bullet_time['S'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['Y']))
 
         # DEBUG
         # bullet_time.view()
@@ -298,12 +292,6 @@ class AEL_CompetitionController(KesslerController):
 
         # Get the defuzzified outputs
         turn_rate = shooting.output['ship_turn']
-        thrust = shooting.output['ship_move']
-
-        if abs(shooting_theta) > math.pi / 2:  # Asteroid is behind the ship
-            thrust = - shooting.output['ship_move']
-        else:
-            thrust = shooting.output['ship_move']
 
         if shooting.output['ship_fire'] >= 0:
             fire = True
