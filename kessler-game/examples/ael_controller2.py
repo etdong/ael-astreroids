@@ -29,6 +29,7 @@ class AEL_CompetitionController(KesslerController):
         ship_turn = ctrl.Consequent(np.arange(-180, 180, 1), 'ship_turn')  # Degrees due to Kessler
         ship_fire = ctrl.Consequent(np.arange(-1, 1, 0.1), 'ship_fire')
         ship_thrust = ctrl.Consequent(np.arange(0.0, 240.0, 0.1), 'ship_thrust') # Anything beyond 120 is gets tough to control
+        ship_mine = ctrl.Consequent(np.arange(-1, 1, 0.1), 'ship_mine')
 
         # Declare fuzzy sets for collision_time (time to collision with the nearest asteroid)
         collision_time['S'] = fuzz.trimf(collision_time.universe, [0, 0, 1])
@@ -72,28 +73,33 @@ class AEL_CompetitionController(KesslerController):
         ship_thrust['PM'] = fuzz.trimf(ship_thrust.universe,  [50, 75, 100])
         ship_thrust['PL'] = fuzz.trimf(ship_thrust.universe, [100, 125, 150])
 
+        # Declare singleton fuzzy sets for the ship_mine consequent; -1 -> don't place mine, +1 -> place mine;
+        # this will be thresholded and returned as the boolean 'drop_mine'
+        ship_mine['N'] = fuzz.zmf(ship_fire.universe, -1, 0)
+        ship_mine['Y'] = fuzz.smf(ship_fire.universe, 0, 1)
+
         # Declare each fuzzy rule
-        rule1 = ctrl.Rule(bullet_time['L'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['N']))
-        rule2 = ctrl.Rule(bullet_time['L'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['N']))
-        rule3 = ctrl.Rule(bullet_time['L'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y']))
+        rule1 = ctrl.Rule(bullet_time['L'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['N'], ship_mine['N']))
+        rule2 = ctrl.Rule(bullet_time['L'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['N'], ship_mine['N']))
+        rule3 = ctrl.Rule(bullet_time['L'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y'], ship_mine['N']))
         # rule4 = ctrl.Rule(bullet_time['L'] & theta_delta['Z'], (ship_turn['Z'], ship_fire['Y']))
-        rule5 = ctrl.Rule(bullet_time['L'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y']))
-        rule6 = ctrl.Rule(bullet_time['L'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['N']))
-        rule7 = ctrl.Rule(bullet_time['L'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['N']))
-        rule8 = ctrl.Rule(bullet_time['M'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['N']))
-        rule9 = ctrl.Rule(bullet_time['M'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['N']))
-        rule10 = ctrl.Rule(bullet_time['M'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y']))
+        rule5 = ctrl.Rule(bullet_time['L'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y'], ship_mine['N']))
+        rule6 = ctrl.Rule(bullet_time['L'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['N'], ship_mine['N']))
+        rule7 = ctrl.Rule(bullet_time['L'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['N'], ship_mine['N']))
+        rule8 = ctrl.Rule(bullet_time['M'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['N'], ship_mine['N']))
+        rule9 = ctrl.Rule(bullet_time['M'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['N'], ship_mine['N']))
+        rule10 = ctrl.Rule(bullet_time['M'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y'], ship_mine['N']))
         # rule11 = ctrl.Rule(bullet_time['M'] & theta_delta['Z'], (ship_turn['Z'], ship_fire['Y']))
-        rule12 = ctrl.Rule(bullet_time['M'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y']))
-        rule13 = ctrl.Rule(bullet_time['M'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['N']))
-        rule14 = ctrl.Rule(bullet_time['M'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['N']))
-        rule15 = ctrl.Rule(bullet_time['S'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['Y']))
-        rule16 = ctrl.Rule(bullet_time['S'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['Y']))
-        rule17 = ctrl.Rule(bullet_time['S'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y']))
+        rule12 = ctrl.Rule(bullet_time['M'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y'], ship_mine['N']))
+        rule13 = ctrl.Rule(bullet_time['M'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['N'], ship_mine['N']))
+        rule14 = ctrl.Rule(bullet_time['M'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['N'], ship_mine['N']))
+        rule15 = ctrl.Rule(bullet_time['S'] & theta_delta['NL'], (ship_turn['NL'], ship_fire['Y'], ship_mine['Y']))
+        rule16 = ctrl.Rule(bullet_time['S'] & theta_delta['NM'], (ship_turn['NM'], ship_fire['Y'], ship_mine['N']))
+        rule17 = ctrl.Rule(bullet_time['S'] & theta_delta['NS'], (ship_turn['NS'], ship_fire['Y'], ship_mine['N']))
         # rule18 = ctrl.Rule(bullet_time['S'] & theta_delta['Z'], (ship_turn['Z'], ship_fire['Y']))
-        rule19 = ctrl.Rule(bullet_time['S'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y']))
-        rule20 = ctrl.Rule(bullet_time['S'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['Y']))
-        rule21 = ctrl.Rule(bullet_time['S'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['Y']))
+        rule19 = ctrl.Rule(bullet_time['S'] & theta_delta['PS'], (ship_turn['PS'], ship_fire['Y'], ship_mine['N']))
+        rule20 = ctrl.Rule(bullet_time['S'] & theta_delta['PM'], (ship_turn['PM'], ship_fire['Y'], ship_mine['N']))
+        rule21 = ctrl.Rule(bullet_time['S'] & theta_delta['PL'], (ship_turn['PL'], ship_fire['Y'], ship_mine['Y']))
 
         # DEBUG
         # bullet_time.view()
@@ -428,6 +434,53 @@ class AEL_CompetitionController(KesslerController):
         # Pass the inputs to the rulebase and fire it
         shooting = ctrl.ControlSystemSimulation(self.targeting_control, flush_after_run=1)
 
+        # calculating asteroid distance
+        closest_asteroid = None
+        for a in game_state["asteroids"]:
+            # Loop through all asteroids, find minimum Eudlidean distance
+            curr_dist = math.sqrt((ship_pos[0] - a["position"][0]) ** 2 + (ship_pos[1] - a["position"][1]) ** 2)
+            if closest_asteroid is None:
+                # Does not yet exist, so initialize first asteroid as the minimum. Ugh, how to do?
+                closest_asteroid = dict(aster=a, dist=curr_dist)
+
+            else:
+                # closest_asteroid exists, and is thus initialized.
+                if closest_asteroid["dist"] > curr_dist:
+                    # New minimum found
+                    closest_asteroid["aster"] = a
+                    closest_asteroid["dist"] = curr_dist
+
+        # calculating mine distance
+        closest_mine = None
+        for mine in game_state["mines"]:
+            curr_dist = math.sqrt((ship_pos[0] - mine["position"][0]) ** 2 + (ship_pos[1] - mine["position"][1]) ** 2)
+            if closest_mine is None:
+                closest_mine = dict(m=mine, dist=curr_dist)
+            else:
+                if closest_mine["dist"] > curr_dist:
+                    closest_mine["m"] = mine
+                    closest_mine["dist"] = curr_dist
+
+                # if there are two mines in closer distance than the nearest asteroid,
+                # we want to run from those mines
+                elif closest_asteroid["dist"] > curr_dist:
+                    closest_asteroid["aster"] = mine
+                    closest_asteroid["dist"] = curr_dist
+
+        # if the mine exists and is within 100 meters
+        # 100 meters was arbitrarily chosen, setting it to mine radius + ship radius was too small
+        if closest_mine is not None and abs(closest_mine["dist"]) < 200.0:
+            # calculating the midpoint of the closest mine and next nearest asteroid/mine
+            mine_aster_midpoint_y = (closest_mine["m"]["position"][1] +
+                                     + closest_asteroid["aster"]["position"][1]) / 2
+            mine_aster_midpoint_x = (closest_mine["m"]["position"][0]
+                                     + closest_asteroid["aster"]["position"][0]) / 2
+
+            my_theta3 = math.atan2((mine_aster_midpoint_y - ship_pos[1]), (mine_aster_midpoint_x - ship_pos[0]))
+
+            # replace the shooting angle so we always run away from both the mine and the next nearest asteroid/mine
+            shooting_theta = my_theta3 - ((math.pi / 180) * ship_state["heading"])
+
         shooting.input['bullet_time'] = bullet_t
         shooting.input['theta_delta'] = shooting_theta
 
@@ -441,11 +494,17 @@ class AEL_CompetitionController(KesslerController):
         else:
             fire = False
 
-        drop_mine = False
+        if shooting.output['ship_mine'] >= 0.5:
+            drop_mine = True
+        else:
+            drop_mine = False
 
         self.eval_frames += 1
 
-        thrust = 0
+        if closest_mine is not None:
+            thrust = -240
+        else:
+            thrust = 0
 
         # DEBUG
         # print(thrust, bullet_t, shooting_theta, turn_rate, fire)
